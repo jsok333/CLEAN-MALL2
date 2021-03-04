@@ -96,12 +96,14 @@
 
 
 ### 완성된 모형
-![10완성](https://user-images.githubusercontent.com/78134087/109800436-854c3200-7c60-11eb-8219-da462ecb84a4.JPG)
 
+![10완성](https://user-images.githubusercontent.com/30484527/110022969-eadb1400-7d6f-11eb-8117-c6bda37d3fe1.JPG)
 
 
 ### 기능적 요구사항 검증
-![11기능](https://user-images.githubusercontent.com/78134087/109800456-89784f80-7c60-11eb-8114-d240ecb65a47.JPG)
+
+![11기능](https://user-images.githubusercontent.com/30484527/110023086-152cd180-7d70-11eb-8e9b-ab2fcb79c1d8.JPG)
+
 
 
 신청
@@ -125,7 +127,7 @@
 
 ### 비기능 요구사항 검증
 
-![12비기능](https://user-images.githubusercontent.com/78134087/109800472-8ed59a00-7c60-11eb-95e5-455ff0983407.JPG)
+![12비기능 (1)](https://user-images.githubusercontent.com/30484527/110024793-e1eb4200-7d71-11eb-8e29-9c0b61e23802.JPG)
 
 
 마이크로 서비스를 넘나드는 시나리오에 대한 트랜잭션 처리
@@ -142,35 +144,31 @@
 3) 나머지 모든 inter-microservice 트랜잭션: 신청상태, 배정/배정취소 등 이벤트에 대한 상태변경을 처리하여 
    데이터 일관성의 시점이 크리티컬하지 않은 모든 경우가 대부분이라 판단, Eventual Consistency를 기본으로 채택함. 
 
-
 ## 헥사고날 아키텍처 다이어그램 도출 (Polyglot)
 ![11헥사](https://user-images.githubusercontent.com/78134087/109798519-31d8e480-7c5e-11eb-826e-9cd8160d0fa9.JPG)
 
 
-
-
-
 # 구현:
 
-서비스를 로컬에서 실행하는 방법은 아래와 같다 
-각 서비스별로 bat 을 파일로 실행한다. 
+서비스를 로컬에서 실행하는 방법은 아래와 같으며, 실행의 편의성을 위해서
+각 서비스별로 bat 파일로 묶어서 실행 합니다.
 
 ```
-- run_taxicall.bat
+- run_cleancall.bat
 call setenv.bat
-cd ..\taxiguider\taxicall
+cd ..\cleanmall\cleancall
 mvn clean spring-boot:run
 pause ..
 
-- run_taximanage.bat
+- run_cleanmanage.bat
 call setenv.bat
-cd ..\taxiguider\taximanage
+cd ..\cleanmall\cleanmanage
 mvn clean spring-boot:run
 pause ..
 
-- run_taxiassign.bat
+- run_cleanassign.bat
 call setenv.bat
-cd ..\taxiguider\taxiassign
+cd ..\cleanmall\cleanassign
 mvn clean spring-boot:run
 pause ..
 
@@ -178,64 +176,154 @@ pause ..
 call setenv.bat
 SET CONDA_PATH=%ANACONDA_HOME%;%ANACONDA_HOME%\BIN;%ANACONDA_HOME%\condabin;%ANACONDA_HOME%\Library\bin;%ANACONDA_HOME%\Scripts;
 SET PATH=%CONDA_PATH%;%PATH%;
-cd ..\taxiguider_py\customer\
-python policy-handler.py 
+cd ..\cleanmall\customer\
+python policy-handler_local.py 
 pause ..
 
 ```
 
-setenv.bat
-```
-SET JAVA_HOME=C:\DEV\SDK\JDK\jdk1.8.0_131
-SET MVN_HOME=C:\DEV\Tools\apache-maven-3.6.3
-SET NODE_HOME=C:\DEV\Tools\nodejs
-SET KAFKA_HOME=C:\DEV\Tools\kafka_2.13-2.7.0
-SET ANACONDA_HOME=C:\DEV\SDK\Anaconda3
-SET MONGO_HOME=C:\DEV\Tools\mongodb
-SET MARIA_HOME=C:\DEV\Tools\mariadb-10.3.13-winx64
-SET MARIA_DATA=C:\DEV\DATA\mariadb
-
-
-SET PATH=%MARIA_HOME%\BIN;%MONGO_HOME%\BIN;%KAFKA_HOME%\BIN\WINDOWS;%JAVA_HOME%\BIN;%MVN_HOME%\BIN;%PATH%;
-```
-
 ## DDD 의 적용
-총 3개의 Domain 으로 관리되고 있으며, 택시요청(Taxicall) , 택시관리(TaxiManage), 택시할당(TaxiAssign) 으로 구성된다. 
+총 3개의 Domain 으로 관리되고 있으며, 청소서비스신청(CleanCall) , 청소시스템 관리(CleanManage), 청소담당자배정(CleanAssign) 으로 구성하였습니다.
 
 
-![DDD](https://user-images.githubusercontent.com/78134019/109460756-74ef5800-7aa4-11eb-8140-ec3ebb47a63f.jpg)
+![1  ddd 화면 캡처 2021-03-04 235102](https://user-images.githubusercontent.com/61448505/109982633-6d9aa980-7d45-11eb-9a06-79b1cb861da6.jpg)
 
-
-![DDD_2](https://user-images.githubusercontent.com/78134019/109460847-9ea87f00-7aa4-11eb-8fe4-94dd57009cd4.jpg)
+![1 ddd 2화면 캡처 2021-03-04 235257](https://user-images.githubusercontent.com/61448505/109982778-915def80-7d45-11eb-8fbc-cfc46c1d330a.jpg)
 
 
 
 ## 폴리글랏 퍼시스턴스
 
-
-
-![폴리그랏](https://user-images.githubusercontent.com/78134019/109483794-02da3b80-7ac3-11eb-8714-40f1f41164bb.jpg)
-
+```
+위치 : /cleanmall>cleancall>pom.xml
+```
+![2 poly 화면 캡처 2021-03-04 235543](https://user-images.githubusercontent.com/61448505/109983126-e1d54d00-7d45-11eb-8b3c-b673b72161d9.jpg)
 
 ## 폴리글랏 프로그래밍 - 파이썬
 
-![폴리그랏프로그래밍](https://user-images.githubusercontent.com/78134019/109489189-dbd33800-7ac9-11eb-86f5-bbdb072454ce.jpg)
+- 로컬 용 소스
+```
+위치 : /cutomer>policy-handler_local.py
+```
+![3 local_py 화면 캡처 2021-03-05 000324](https://user-images.githubusercontent.com/61448505/109983569-498b9800-7d46-11eb-962b-6d0bf0e91632.jpg)
 
+- 클라우드 용 소스
+
+![3 local_py 화면 캡처 2021-03-05 000324](https://user-images.githubusercontent.com/61448505/109983846-91aaba80-7d46-11eb-952d-2c811ecce64b.jpg)
+
+## 마이크로 서비스 호출 흐름
+
+- cleancall 서비스 호출처리
+
+청소서비스 요청(cleancall)->청소시스템 관리(CleanManage) 우선 호출처리(req/res) 되며,
+청소담당자 할당(cleanassign)에서 청소담당자를 할당하게 되면 호출 상태가 호출에서 호출확정 상태가 됩니다
+
+우선, 로컬에서는 다음과 같이 두 개의 호출 상태를 만듭니다.
+```
+http localhost:8081/cleancalls tel="01023221353" location="seoul" cost=200000
+http localhost:8081/cleancalls tel="0102545145" location="seoul" cost=400000
+
+```
+![3  청소요청1 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109984974-a176ce80-7d47-11eb-82b5-16ebe0ae5eaa.jpg)
+
+![3  청소요청1 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109985170-cff4a980-7d47-11eb-8b81-6d3cfed26a5a.jpg)
+
+
+우선, 클라우드 상에서 호출은 다음과 같이 합니다. External-IP는 52.231.8.44 입니다.
+```
+http 52.231.8.44:8080/cleancalls tel="0102545145" location="seoul" cost=600000
+http 52.231.8.44:8080/cleancalls tel="0102545145" location="seoul" cost=900000000
+```
+
+![3  청소요청 3 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109991473-b2c2d980-7d4d-11eb-96e4-bef782653055.jpg)
+
+![3  청소요청 4 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109991977-282eaa00-7d4e-11eb-8527-0d224413d1ba.jpg)
+
+
+
+아래 호출 결과는 모두 청소담당자 할당(cleanassign)에서 청소담당자가 할당되어 호출 서비스를 확인하연 호출 상태는 호출 확정가 되어 있습니다.
+
+![3  청소요청 33 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/30484527/110019453-d39a2780-7d6b-11eb-8270-11f07b3f7517.jpg)
+
+클라우드 상에서도 마찬가지 입니다.
+
+![3  청소요청 5 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109992627-c9b5fb80-7d4e-11eb-989f-c35b127d3920.jpg)
+
+- cleancall 서비스 호출 취소 처리
+
+호출 취소는 청소서비스 호출에서 다음과 같이 호출 하나를 취소 함으로써 진행 합니다.
+
+```
+http delete http://localhost:8081/cleancalls/2
+HTTP/1.1 204
+Date: Thu, 04 Mar 2021 15:21:28 GMT
+```
+
+클라우드 상에서 호출 취소는 다음과 같습니다.
+```
+http delete http://20.194.36.201:8080/cleancalls/4
+HTTP/1.1 204
+Date: Thu, 04 Mar 2021 16:07:12 GMT
+```
+
+
+호출이 취소 되면 아래와 같이 청소서비스 호출이 하나가 삭제 되었고,
+
+```
+http localhost:8081/cleancalls
+http 20.194.36.201:8080/taxicalls
+```
+
+![4  삭제 화면 캡처 2021-03-05 002356](https://user-images.githubusercontent.com/61448505/109986485-231b2c00-7d49-11eb-9dbe-e07c96197e07.jpg)
+
+![3  청소요청 7 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109994190-67f69100-7d50-11eb-8b09-a0dccdf8555f.jpg)
+
+청소시스템 관리에서는 해당 호출의 호출 상태가 호출취소로 상태가 변경 됩니다.
+
+```
+http localhost:8082/cleanmanages
+http 52.231.8.44:8080/cleancalls
+```
+
+![4  삭제 화면 캡처 2021-03-05 002356](https://user-images.githubusercontent.com/61448505/109987221-c704d780-7d49-11eb-913f-9fb2cabd1731.jpg)
+
+![3  청소요청 6 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109993444-a5a6ea00-7d4f-11eb-80eb-13dfab35cb76.jpg)
+
+
+- 고객 메시지 서비스 처리
+
+고객(customer)는 호출 확정과 할당 확정에 대한 메시지를 다음과 같이 받을 수 있으며,
+할당 된 택시기사의 정보를 또한 확인 할 수 있습니다.
+파이썬으로 구현 하였습니다.
+
+![3  청소요청 9 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/30484527/110021379-fd544e00-7d6d-11eb-9eaf-9848386adee0.jpg)
 
 ## Gateway 적용
 
+서비스에 대한 하나의 접점을 만들기 위한 게이트웨이의 설정은 8080이며,
+청소서비스신청(CleanCall) , 청소시스템 관리(CleanManage), 청소담당자배정(CleanAssign) 마이크로서비스에 대한 일원화 된 접점을 제공하기 위한 설정 입니다.
+```
+청소서비스신청 서비스 : 8081
+청소시스템 관리 서비스 : 8082
+청소담당자배정 서비스 : 8083
+```
+
 gateway > applitcation.yml 설정
 
-![gateway_1](https://user-images.githubusercontent.com/78134019/109480363-c73d7280-7abe-11eb-9904-0c18e79072eb.png)
+![5  gateway 1 화면 캡처 2021-03-05 003252](https://user-images.githubusercontent.com/61448505/109987908-5f02c100-7d4a-11eb-81c5-3eb7a64414ad.jpg)
 
-![gateway_2](https://user-images.githubusercontent.com/78134019/109480386-d02e4400-7abe-11eb-9251-a813ac911e0d.png)
+![5  gateway 2 화면 캡처 2021-03-05 003252](https://user-images.githubusercontent.com/61448505/109988271-b86af000-7d4a-11eb-80d1-08ecac5811ee.jpg)
 
 
-gateway 테스트
+
+- gateway 로컬 테스트
+
+로컬 테스트는 다음과 같이 한글 서비스 호출로 테스트 되었습니다.
 
 ```
-http localhost:8080/택시호출s
+http localhost:8080/cleancalls
 -> gateway 를 호출하나 8081 로 호출됨
+
 ```
 ![gateway_3](https://user-images.githubusercontent.com/78134019/109480424-da504280-7abe-11eb-988e-2a6d7a1f7cea.png)
 
@@ -243,15 +331,15 @@ http localhost:8080/택시호출s
 
 ## 동기식 호출 과 Fallback 처리
 
-호출(taxicall)->택시관리(taximanage) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리함.
-호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+청소서비스신청(CleanCall)과 청소시스템 관리(CleanManage)간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하였습니다.
+호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다.
 
-
+로컬 테스트를 위한 파일은 다음과 같이 구현 하였으며,
 ```
-# external > 택시관리Service.java
+# external > CleanmanageService.java
 
 
-package taxiguider.external;
+package cleancall.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -259,213 +347,249 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 //@FeignClient(name="taximanage", url="http://localhost:8082")
-@FeignClient(name="taximanage", url="http://localhost:8082", fallback = 택시관리ServiceFallback.class)
-public interface 택시관리Service {
+@FeignClient(name="cleanmanage", url="http://localhost:8082", fallback = CleanmanageServiceFallback.class)
+public interface CleanmanageService {
 
-    @RequestMapping(method= RequestMethod.POST, path="/택시관리s")
-    public void 택시할당요청(@RequestBody 택시관리 택시관리);
+    @RequestMapping(method= RequestMethod.POST, path="/cleanmanages")
+    public void cleanManageCall(@RequestBody Cleanmanage cleanmanage);
 
 }
 
 ```
 
+
+다음은 CleanmanageService 인터페이스를 구현한 CleanmanageServiceFallback 클래스입니다.
+
 ```
-# external > 택시관리ServiceFallback.java
-
-
-package taxiguider.external;
+package cleancall.external;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class 택시관리ServiceFallback implements 택시관리Service {
+public class CleanmanageServiceFallback implements CleanmanageService {
 	 
-	//@Override
-	//public void 택시할당요청(택시관리 택시관리) 
-	//{	
-	//	System.out.println("Circuit breaker has been opened. Fallback returned instead.");
-	//}
-	
-	
 	@Override
-	public void 택시할당요청(택시관리 택시관리) {
-		// TODO Auto-generated method stub
-		System.out.println("Circuit breaker has been opened. Fallback returned instead. " + 택시관리.getId());
+	public void cleanManageCall( Cleanmanage cleanmanage) {
+		System.out.println("Circuit breaker has been opened. Fallback returned instead. " + cleanmanage.getId());
 	}
 
 }
 
 ```
 
-![동기식](https://user-images.githubusercontent.com/78134019/109463569-97837000-7aa8-11eb-83c4-6f6eff1594aa.jpg)
+![7 동기처리 오류 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110006288-cd507f00-7d5c-11eb-8ba6-16b532e159b9.jpg)
 
+- 로컬 청소서비스 신청 
 
-- 택시호출을 하면 택시관리가 호출되도록..
+청소서비스 신청을 하면 청소서비스 관리에 해당 요청에 대해 다음과 같이 동기적으로 진행 합니다.
 ```
-# 택시호출.java
+# Cleancall.java
 
- @PostPersist
-    public void onPostPersist(){    	
-    	System.out.println("휴대폰번호 " + get휴대폰번호());
-        System.out.println("호출위치 " + get호출위치());
-        System.out.println("호출상태 " + get호출상태());
-        System.out.println("예상요금 " + get예상요금());
+@PostPersist
+    public void onPostPersist(){
+        Cleancalled Cleancalled = new Cleancalled();
+        BeanUtils.copyProperties(this, Cleancalled);
+        Cleancalled.publishAfterCommit();
+    	
+    	System.out.println("고객 휴대폰번호 " + getTel());
+        System.out.println("location " + getLocation());
+        System.out.println("호출상태 " + getStatus());
+        System.out.println("Cost " + getCost());
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.   	
-    	if(get휴대폰번호() != null)
+    	if(getTel() != null)
 		{
     		System.out.println("SEND###############################" + getId());
-			택시관리 택시관리 = new 택시관리();
-	        
-			택시관리.setOrderId(String.valueOf(getId()));
-	        택시관리.set고객휴대폰번호(get휴대폰번호());
-	        if(get호출위치()!=null) 
-	        	택시관리.set호출위치(get호출위치());
-	        if(get호출상태()!=null) 
-	        	택시관리.set호출상태(get호출상태());
-	        if(get예상요금()!=null) 
-	        	택시관리.set예상요금(get예상요금());
+			Cleanmanage cleanmanage = new Cleanmanage();
+			cleanmanage.setId(getId());
+			cleanmanage.setOrderId(String.valueOf(getId()));
+			cleanmanage.setTel(getTel());
+	        if(getLocation()!=null)
+				cleanmanage.setLocation(getLocation());
+	        if(getStatus()!=null)
+				cleanmanage.setStatus(getStatus());
+	        if(getCost()!=null)
+				cleanmanage.setCost(getCost());
 	        
 	        // mappings goes here
-	        TaxicallApplication.applicationContext.getBean(택시관리Service.class).택시할당요청(택시관리);
+	        CleancalllApplication.applicationContext.getBean(CleanmanageService.class).cleanManageCall(cleanmanage);
 		}
+		
+```
+![7 동기처리 오류 2 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009515-7482e580-7d60-11eb-989f-c4d695bd7e9b.jpg)
+
 ```
 
-![동기식2](https://user-images.githubusercontent.com/78134019/109463985-47f17400-7aa9-11eb-8603-c1f83e17951d.jpg)
-
-- 동기식 호출 적용으로 택시 관리 시스템이 정상적이지 않으면 , 택시콜도 접수될 수 없음을 확인 
 ```
-# 택시 관리 시스템 down 후 taxicall 호출 
-
-#taxicall
-
-C:\Users\Administrator>http localhost:8081/택시호출s 휴대폰번호="01012345678" 호출상태="호출"
-```
-
-![택시관리죽으면택시콜놉](https://user-images.githubusercontent.com/78134019/109464780-905d6180-7aaa-11eb-9c90-e7d1326deea1.jpg)
+- 동기식 호출 적용으로 청소서비스 관리시스템이 정상적이지 않으면 , 청소서비스 신청도 접수될 수 없음을 다음과 같이 확인 할 수 있습니다.
 
 ```
-# 택시 관리 (taximanage) 재기동 후 주문하기
+- 청소서비스 관리시스템 down 후 Cleancall 신청 
+#Cleancall
 
-#주문하기(order)
-http localhost:8081/택시호출s 휴대폰번호="01012345678" 호출상태="호출"
 ```
+![7 동기처리 오류 3 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009227-135b1200-7d60-11eb-97da-0df04aacc905.jpg)
 
-![택시관리재시작](https://user-images.githubusercontent.com/78134019/109464984-e5997300-7aaa-11eb-9363-b7bfe15de105.jpg)
+```
+# 청소서비스 관리시스템 (cleanmanage) 재기동 후 호출
 
--fallback 
+```
+![7 동기처리 오류 4 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009914-038ffd80-7d61-11eb-87da-e733dd9da9b6.jpg)
 
-![fallback캡쳐](https://user-images.githubusercontent.com/78134019/109480299-b5f46600-7abe-11eb-906e-9e1e6da245b2.png)
+![7 동기처리 오류 5 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110010544-c1b38700-7d61-11eb-8afb-043cbc4bd9d4.jpg)
 
+-fallback
+
+![7 동기처리 오류 6 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110011203-836a9780-7d62-11eb-8f93-c8804ecb9f7f.jpg)
 
 ## 비동기식 호출 / 장애격리  / 성능
 
-택시 관리 (Taxi manage) 이후 택시 할당(Taxi Assign) 은 비동기식 처리이므로 , 택시 호출(Taxi call) 의 서비스 호출에는 영향이 없다
- 
-고객이 택시 호출(Taxi call) 후 상태가 [호출]->[호출중] 로 변경되고 할당이 완료되면 [호출확정] 로 변경이 되지만 , 택시 할당(Taxi Assign)이 정상적이지 않으므로 [호출중]로 남아있음. 
---> (시간적 디커플링)
-<고객 택시 호출 Taxi call>
-![비동기_호출2](https://user-images.githubusercontent.com/78134019/109468467-f4365900-7aaf-11eb-877a-049637b5ee6a.png)
+청소시스템 관리(CleanManage)와 청소담당자 배정(CleanAssign)은 비동기식 처리이므로 ,
+청소서비스신청(CleanCall) 서비스 호출에는 영향이 없도록 구성 합니다.
 
-<택시 할당이 정상적이지 않아 호출중으로 남아있음>
-![택시호출_택시할당없이_조회](https://user-images.githubusercontent.com/78134019/109471791-99ebc700-7ab4-11eb-924f-03715de42eba.png)
+고객이 청소서비스 신청(CleanCall) 후 상태가 [호출중] 로 변경되고 청소담당자 배정이 완료되면 [호출확정] 로 변경이 되지만 ,
+청소담당자 배정(CleanAssign)이 정상적이지 않으므로 [호출중]로 남게 됩니다.
 
+< 고객 청소서비스 신청 >
 
+![8 비동기 1 화면 캡처 2021-03-05 033544](https://user-images.githubusercontent.com/30484527/110013243-c594d880-7d64-11eb-97d5-3bbf180a0ed4.jpg)
 
-## 성능 조회 / View 조회
-고객이 호출한 모든 정보는 조회가 가능하다. 
+<청소담당자 할당이 정상적이지 않아 호출중으로 남아있음>
 
-![고객View](https://user-images.githubusercontent.com/78134019/109483385-80ea1280-7ac2-11eb-9419-bf3ff5a0dbbc.png)
+![8 비동기 2 화면 캡처 2021-03-05 033544](https://user-images.githubusercontent.com/30484527/110013641-36d48b80-7d65-11eb-9cff-8178f5fb5b46.jpg)
 
 
-======================================================================================================================
-# 운영
 
-## Deploy / Pipeline
+## 정보 조회 / View 조회
+고객은 청소서비스 신청, 처리되는 동안의 내용을 조회 할 수 있습니다.
 
-- 네임스페이스 만들기
+![9 view 화면 캡처 2021-03-05 034859](https://user-images.githubusercontent.com/30484527/110014533-3ee0fb00-7d66-11eb-8451-91ade6a48a99.jpg)
+
+
+
+
+## 소스 패키징
+
+- 클라우드 배포를 위해서 다음과 같이 패키징 작업을 하였습니다.
 ```
-kubectl create ns phone82
+cd gateway
+mvn clean && mvn package
+cd ..
+cd cleancall
+mvn clean && mvn package
+cd ..
+cd cleanmanage
+mvn clean && mvn package
+cd ..
+cd cleanassign
+mvn clean && mvn package
+cd ..
+```
+<cleanassign>
+
+![10 운영 package 화면 캡처 2021-03-05 040034](https://user-images.githubusercontent.com/30484527/110015629-6e443780-7d67-11eb-81ff-912bddc0b12f.jpg)
+
+
+======================================================================================
+# 클라우드 배포/운영 파이프라인
+
+- 애저 클라우드에 배포하기 위해서 다음과 같이 주요 정보를 설정 하였습니다.
+
+```
+리소스 그룹명 : skuser13-rsrcgrp
+클러스터 명   : skuser13-aks
+레지스트리 명 : skuser13
+```
+
+- az login
+  우선 az에 로그인 합니다.
+```
+```
+
+- 토큰 가져오기
+```
+az aks get-credentials --resource-group skuser13-rsrcgrp --name skuser13-aks
+```
+
+- aks에 acr 붙이기
+```
+az aks update -n skuser13-aks -g skuser13-rsrcgrp --attach-acr skuser13
+
+```
+- 네임스페이스 만들기
+
+```
+kubectl create ns skuser13ns 
 kubectl get ns
 ```
-![image](https://user-images.githubusercontent.com/73699193/97960790-6d20ef00-1df5-11eb-998d-d5591975b5d4.png)
+![11 ns 화면 캡처 2021-03-05 050724](https://user-images.githubusercontent.com/30484527/110023683-c7fd2f80-7d70-11eb-8c63-04ffa2c5a98f.jpg)
 
-- 폴더 만들기, 해당폴더로 이동
+* 도커 이미지 만들고 레지스트리에 등록하기
 ```
-mkdir phone82
-cd phone 82
+cd cleancall
+az acr build --registry skuser13 --image skuser13 .azurecr.io/taxicalleng:v1 .
+az acr build --registry skuser13 --image skuser13.azurecr.io/taxicalleng:v2 .
+cd ..
+cd cleanmanage
+az acr build --registry skuser13 --image skuser13.azurecr.io/cleanmanage:v1 .
+cd ..
+cd cleanassign
+az acr build --registry skuser13 --image skuser13.io/cleanassign:v1 .
+cd ..
+cd gateway
+az acr build --registry skuser13 --image skuser13.azurecr.io/gateway:v1 .
+cd ..
+cd customer
+az acr build --registry skuser13 --image skuser13.azurecr.io/customer-policy-handler:v1 .
 ```
-![image](https://user-images.githubusercontent.com/73699193/97961127-0ea84080-1df6-11eb-81b3-1d5e460d4c0f.png)
+![12 이미지 등록 화면 캡처 2021-03-05 052032](https://user-images.githubusercontent.com/30484527/110025395-a1d88f00-7d72-11eb-94b2-951dd6c011f8.jpg)
 
-- 소스 가져오기
-```
-git clone https://github.com/phone82/app.git
-```
-![image](https://user-images.githubusercontent.com/73699193/98089346-eb4cc680-1ec5-11eb-9c23-f6987dee9308.png)
+-각 마이크로 서비스를 yml 파일을 사용하여 배포 합니다.
 
-- 빌드하기
-```
-cd app
-mvn package -Dmaven.test.skip=true
-```
-![image](https://user-images.githubusercontent.com/73699193/98089442-19320b00-1ec6-11eb-88b5-544cd123d62a.png)
+![13 배포 화면 캡처 2021-03-05 052410](https://user-images.githubusercontent.com/30484527/110025716-18758c80-7d73-11eb-8393-4bfbc00b4783.jpg)
 
-- 도커라이징: Azure 레지스트리에 도커 이미지 푸시하기
+- deployment.yml 및 sevice.yaml로 서비스 배포
 ```
-az acr build --registry admin02 --image admin02.azurecr.io/app:latest .
+cd ../../
+cd gateway_eng/kubernetes
+kubectl apply -f deployment.yml --namespace=skuser13ns
+kubectl apply -f service.yaml --namespace=skuser13ns
 ```
-![image](https://user-images.githubusercontent.com/73699193/98089685-6dd58600-1ec6-11eb-8fb9-80705c854c7b.png)
+<Deploy cleancall>
 
-- 컨테이너라이징: 디플로이 생성 확인
-```
-kubectl create deploy app --image=admin02.azurecr.io/app:latest -n phone82
-kubectl get all -n phone82
-```
-![image](https://user-images.githubusercontent.com/73699193/98090560-83977b00-1ec7-11eb-9770-9cfe1021f0b4.png)
+![14  배포2 화면 캡처 2021-03-05 053228](https://user-images.githubusercontent.com/30484527/110026698-50c99a80-7d74-11eb-816b-8344c71a1033.jpg)
 
-- 컨테이너라이징: 서비스 생성 확인
+<Deploy cleanassign>
+
+![14  배포3 화면 캡처 2021-03-05 053228](https://user-images.githubusercontent.com/30484527/110026891-9f773480-7d74-11eb-8e5d-05299bf7774a.jpg)
+
+- 서비스확인
 ```
-kubectl expose deploy app --type="ClusterIP" --port=8080 -n phone82
-kubectl get all -n phone82
+kubectl get all -n skuser13ns
 ```
-![image](https://user-images.githubusercontent.com/73699193/98090693-b80b3700-1ec7-11eb-959e-fc0ce94663aa.png)
-
-- pay, store, customer, gateway에도 동일한 작업 반복
-
-
-
-
--(별첨)deployment.yml을 사용하여 배포 
-
-- deployment.yml 편집
-```
-namespace, image 설정
-env 설정 (config Map) 
-readiness 설정 (무정지 배포)
-liveness 설정 (self-healing)
-resource 설정 (autoscaling)
-```
-![image](https://user-images.githubusercontent.com/73699193/98092861-8182eb80-1eca-11eb-87c5-afa22140ebad.png)
-
-- deployment.yml로 서비스 배포
-```
-cd app
-kubectl apply -f kubernetes/deployment.yml
-```
+![14  배포 4 화면 캡처 2021-03-05 053228](https://user-images.githubusercontent.com/30484527/110029974-79ec2a00-7d78-11eb-8b0a-40f0536fe670.jpg)
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
+* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현하였습니다.
 
-시나리오는 단말앱(app)-->결제(pay) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
+- Hystrix 를 설정:
 
-- Hystrix 를 설정:  요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
+요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
 # application.yml
 feign:
   hystrix:
     enabled: true
-    
+
+# To set thread isolation to SEMAPHORE
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          strategy: SEMAPHORE
+
 hystrix:
   command:
     # 전역설정
@@ -473,186 +597,87 @@ hystrix:
       execution.isolation.thread.timeoutInMilliseconds: 610
 
 ```
-![image](https://user-images.githubusercontent.com/73699193/98093705-a166df00-1ecb-11eb-83b5-f42e554f7ffd.png)
+![hystrix](https://user-images.githubusercontent.com/78134019/109652345-0218d680-7ba3-11eb-847b-708ba071c119.jpg)
 
-* siege 툴 사용법:
-```
- siege가 생성되어 있지 않으면:
- kubectl run siege --image=apexacme/siege-nginx -n phone82
- siege 들어가기:
- kubectl exec -it pod/siege-5c7c46b788-4rn4r -c siege -n phone82 -- /bin/bash
- siege 종료:
- Ctrl + C -> exit
-```
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
-- 동시사용자 100명
-- 60초 동안 실시
+
+부하테스트
+
+
+* Siege 리소스 생성
 
 ```
-siege -c100 -t60S -r10 -v --content-type "application/json" 'http://app:8080/orders POST {"item": "abc123", "qty":3}'
+kubectl run siege --image=apexacme/siege-nginx -n skuser13ns
 ```
-- 부하 발생하여 CB가 발동하여 요청 실패처리하였고, 밀린 부하가 pay에서 처리되면서 다시 order를 받기 시작 
 
-![image](https://user-images.githubusercontent.com/73699193/98098702-07eefb80-1ed2-11eb-94bf-316df4bf682b.png)
+* 실행
+
+```
+kubectl exec -it pod/siege-5459b87f86-q62hb -c siege -n skuser13ns -- /bin/bash
+```
+
+*부하 실행
+
+```
+siege -c190 -t60S -r10 -v --content-type "application/json" 'http://cleancall:8080/cleancalls POST {"tel": "0101231234"}'
+```
+
+- 부하 발생하여 CB가 발동하여 요청 실패처리하였고, 밀린 부하가 청소서비스 요청(cleancall) 서비스에서 처리되면서
+  다시 cleancall에서 서비스를 받기 시작 합니다
+
+![15 cb 화면 캡처 2021-03-05 074458](https://user-images.githubusercontent.com/30484527/110041152-351bbf80-7d87-11eb-86cf-3aeceeed05e3.jpg)
 
 - report
 
-![image](https://user-images.githubusercontent.com/73699193/98099047-6e741980-1ed2-11eb-9c55-6fe603e52f8b.png)
-
-- CB 잘 적용됨을 확인
+![15 cb 2 화면 캡처 2021-03-05 074458](https://user-images.githubusercontent.com/30484527/110041496-8035d280-7d87-11eb-8201-d0eada382edd.jpg)
 
 
 ### 오토스케일 아웃
 
-- 대리점 시스템에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
-
 ```
 # autocale out 설정
-store > deployment.yml 설정
+ deployment.yml 설정
 ```
-![image](https://user-images.githubusercontent.com/73699193/98187434-44fbd200-1f54-11eb-9859-daf26f812788.png)
+
+![auto1](https://user-images.githubusercontent.com/78134019/109794479-3ea70980-7c59-11eb-8d32-fbc039106c8c.jpg)
 
 ```
-kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 -n phone82
+kubectl autoscale deploy cleanmanage --min=1 --max=10 --cpu-percent=15 -n skuser13ns
+
 ```
-![image](https://user-images.githubusercontent.com/73699193/98100149-ce1ef480-1ed3-11eb-908e-a75b669d611d.png)
-
-
--
-- CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
-kubectl exec -it pod/siege-5c7c46b788-4rn4r -c siege -n phone82 -- /bin/bash
-siege -c100 -t120S -r10 -v --content-type "application/json" 'http://store:8080/storeManages POST {"orderId":"456", "process":"Payed"}'
+root@labs-1930058470:/home/project/personal/CLEAN-MALL2/cleanmanage/kubernetes# kubectl exec -it pod/siege-5459b87f86-q62hb -c siege -n skuser13ns -- /bin/bash
+root@siege-5459b87f86-q62hb:/# siege -c200 -t120S -r10 -v --content-type "application/json" 'http://cleancall:8080/cleancalls POST {"tel": "0101231234"}'
+
 ```
-![image](https://user-images.githubusercontent.com/73699193/98102543-0d9b1000-1ed7-11eb-9cb6-91d7996fc1fd.png)
+![16 hpa 1 화면 캡처 2021-03-05 080745](https://user-images.githubusercontent.com/30484527/110043056-123eda80-7d8a-11eb-9116-b7efe4d54668.jpg)
 
-- 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
+- 오토스케일링에 대한 모니터링:
 ```
-kubectl get deploy store -w -n phone82
+kubectl get deploy taxicall -w -n team03
 ```
-- 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다. max=10 
-- 부하를 줄이니 늘어난 스케일이 점점 줄어들었다.
+![16 hpa 2 화면 캡처 2021-03-05 080745](https://user-images.githubusercontent.com/30484527/110043222-6053de00-7d8a-11eb-93d9-bfc89e6e49a9.jpg)
 
-![image](https://user-images.githubusercontent.com/73699193/98102926-92862980-1ed7-11eb-8f19-a673d72da580.png)
-
-- 다시 부하를 주고 확인하니 Availability가 높아진 것을 확인 할 수 있었다.
-
-![image](https://user-images.githubusercontent.com/73699193/98103249-14765280-1ed8-11eb-8c7c-9ea1c67e03cf.png)
 
 
 ## 무정지 재배포
 
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscale 이나 CB 설정을 제거함
+- deployment.yml에 readiness 옵션을 추가
 
 
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+![무정지 배포1](https://user-images.githubusercontent.com/78134019/109809110-45d71300-7c6b-11eb-955c-9b8a3b3db698.png)
+
+
+- siege 실행
 ```
-kubectl apply -f kubernetes/deployment_readiness.yml
-```
-- readiness 옵션이 없는 경우 배포 중 서비스 요청처리 실패
-
-![image](https://user-images.githubusercontent.com/73699193/98105334-2a394700-1edb-11eb-9633-f5c33c5dee9f.png)
-
-
-- deployment.yml에 readiness 옵션을 추가 
-
-![image](https://user-images.githubusercontent.com/73699193/98107176-75ecf000-1edd-11eb-88df-617c870b49fb.png)
-
-- readiness적용된 deployment.yml 적용
+root@siege-5459b87f86-q62hb:/# siege -c100 -t120S -r10 -v --content-type "application/json" 'http://cleancall:8080/cleancalls POST {"tel": "0101231234"}'
 
 ```
-kubectl apply -f kubernetes/deployment.yml
-```
-- 새로운 버전의 이미지로 교체
-```
-cd acr
-az acr build --registry admin02 --image admin02.azurecr.io/store:v4 .
-kubectl set image deploy store store=admin02.azurecr.io/store:v4 -n phone82
-```
-- 기존 버전과 새 버전의 store pod 공존 중
 
-![image](https://user-images.githubusercontent.com/73699193/98106161-65884580-1edc-11eb-9540-17a3c9bdebf3.png)
 
 - Availability: 100.00 % 확인
 
-![image](https://user-images.githubusercontent.com/73699193/98106524-c152ce80-1edc-11eb-8e0f-3731ca2f709d.png)
+![19 무정지 재배포1 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110045932-ce9a9f80-7d8e-11eb-90ae-7b237b84238d.jpg)
 
+![19 무정지 재배포 2 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110046173-e3773300-7d8e-11eb-8aab-94ea7ded6a5b.jpg)
 
-
-## Config Map
-
-- apllication.yml 설정
-
-* default쪽
-
-![image](https://user-images.githubusercontent.com/73699193/98108335-1c85c080-1edf-11eb-9d0f-1f69e592bb1d.png)
-
-* docker 쪽
-
-![image](https://user-images.githubusercontent.com/73699193/98108645-ad5c9c00-1edf-11eb-8d54-487d2262e8af.png)
-
-- Deployment.yml 설정
-
-![image](https://user-images.githubusercontent.com/73699193/98108902-12b08d00-1ee0-11eb-8f8a-3a3ea82a635c.png)
-
-- config map 생성 후 조회
-```
-kubectl create configmap apiurl --from-literal=url=http://pay:8080 --from-literal=fluentd-server-ip=10.xxx.xxx.xxx -n phone82
-```
-![image](https://user-images.githubusercontent.com/73699193/98107784-5bffdd00-1ede-11eb-8da6-82dbead0d64f.png)
-
-- 설정한 url로 주문 호출
-```
-http POST http://app:8080/orders item=dfdf1 qty=21
-```
-
-![image](https://user-images.githubusercontent.com/73699193/98109319-b732cf00-1ee0-11eb-9e92-ad0e26e398ec.png)
-
-- configmap 삭제 후 app 서비스 재시작
-```
-kubectl delete configmap apiurl -n phone82
-kubectl get pod/app-56f677d458-5gqf2 -n phone82 -o yaml | kubectl replace --force -f-
-```
-![image](https://user-images.githubusercontent.com/73699193/98110005-cf571e00-1ee1-11eb-973f-2f4922f8833c.png)
-
-- configmap 삭제된 상태에서 주문 호출   
-```
-http POST http://app:8080/orders item=dfdf2 qty=22
-```
-![image](https://user-images.githubusercontent.com/73699193/98110323-42f92b00-1ee2-11eb-90f3-fe8044085e9d.png)
-
-![image](https://user-images.githubusercontent.com/73699193/98110445-720f9c80-1ee2-11eb-851e-adcd1f2f7851.png)
-
-![image](https://user-images.githubusercontent.com/73699193/98110782-f4985c00-1ee2-11eb-97a7-1fed3c6b042c.png)
-
-
-
-## Self-healing (Liveness Probe)
-
-- store 서비스 정상 확인
-
-![image](https://user-images.githubusercontent.com/27958588/98096336-fb1cd880-1ece-11eb-9b99-3d704cd55fd2.jpg)
-
-
-- deployment.yml 에 Liveness Probe 옵션 추가
-```
-cd ~/phone82/store/kubernetes
-vi deployment.yml
-
-(아래 설정 변경)
-livenessProbe:
-	tcpSocket:
-	  port: 8081
-	initialDelaySeconds: 5
-	periodSeconds: 5
-```
-![image](https://user-images.githubusercontent.com/27958588/98096375-0839c780-1ecf-11eb-85fb-00e8252aa84a.jpg)
-
-- store pod에 liveness가 적용된 부분 확인
-
-![image](https://user-images.githubusercontent.com/27958588/98096393-0a9c2180-1ecf-11eb-8ac5-f6048160961d.jpg)
-
-- store 서비스의 liveness가 발동되어 13번 retry 시도 한 부분 확인
-
-![image](https://user-images.githubusercontent.com/27958588/98096461-20a9e200-1ecf-11eb-8b02-364162baa355.jpg)
 
