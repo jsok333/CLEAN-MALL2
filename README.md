@@ -692,29 +692,27 @@ root@siege-5459b87f86-q62hb:/# siege -c100 -t120S -r10 -v --content-type "applic
 
 ## Self-healing (Liveness Probe)
 
-- drivercall 서비스 정상 확인
+- cleancall 서비스 정상 확인
 
-![image](https://user-images.githubusercontent.com/27958588/98096336-fb1cd880-1ece-11eb-9b99-3d704cd55fd2.jpg)
+![1  화면 캡처 2021-03-05 111811](https://user-images.githubusercontent.com/61448505/110060887-f9462180-7da9-11eb-9bb9-fec85ce6607f.jpg)
 
+![2  화면 캡처 2021-03-05 111811](https://user-images.githubusercontent.com/61448505/110061052-38747280-7daa-11eb-8ee8-cf98b14ff212.jpg)
 
-- deployment.yml 에 Liveness Probe 옵션 추가
+- deployment_liveness.yml 에 하기 Probe 옵션 적용
 ```
-cd ~/drivercenter/drivercall/kubernetes
-vi deployment.yml
+/cleancall/kubernetes/deployment_liveness.yml
 
-(아래 설정 변경)
 livenessProbe:
 	tcpSocket:
 	  port: 8081
 	initialDelaySeconds: 5
 	periodSeconds: 5
 ```
-![스트레스테스트](screenshots/livenessProbe.png "livenessProbe")
 
-- drivercall pod에 liveness가 적용된 부분은 다음과 같습니다.
+- cleancall pod에 liveness가 적용된 부분은 다음과 같습니다.
 
-![스트레스테스트](screenshots/livenessProbe2.png "livenessProbe")
+![3 화면 캡처 2021-03-05 115320](https://user-images.githubusercontent.com/61448505/110061508-0f081680-7dab-11eb-9761-afd6aa949031.jpg)
 
-- drivercall 서비스의 liveness가 발동되어 11번 retry 시도 한 부분 확인 하였습니다.
+- cleancall 서비스의 liveness가 발동되어 11번 retry 확인 하였습니다.
 
-![스트레스테스트](screenshots/livenessProbe3.png "livenessProbe")
+![4  화면 캡처 2021-03-05 115546](https://user-images.githubusercontent.com/61448505/110061745-6c03cc80-7dab-11eb-8338-e950be2ed5de.jpg)
