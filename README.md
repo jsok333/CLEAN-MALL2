@@ -687,3 +687,33 @@ root@siege-5459b87f86-q62hb:/# siege -c100 -t120S -r10 -v --content-type "applic
 ![19 무정지 재배포 2 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110046173-e3773300-7d8e-11eb-8aab-94ea7ded6a5b.jpg)
 
 
+
+## Self-healing (Liveness Probe)
+
+- drivercall 서비스 정상 확인
+
+![image](https://user-images.githubusercontent.com/27958588/98096336-fb1cd880-1ece-11eb-9b99-3d704cd55fd2.jpg)
+
+
+- deployment.yml 에 Liveness Probe 옵션 추가
+```
+cd ~/drivercenter/drivercall/kubernetes
+vi deployment.yml
+
+(아래 설정 변경)
+livenessProbe:
+	tcpSocket:
+	  port: 8081
+	initialDelaySeconds: 5
+	periodSeconds: 5
+```
+![스트레스테스트](screenshots/livenessProbe.png "livenessProbe")
+
+- drivercall pod에 liveness가 적용된 부분은 다음과 같습니다.
+
+![스트레스테스트](screenshots/livenessProbe2.png "livenessProbe")
+
+- drivercall 서비스의 liveness가 발동되어 11번 retry 시도 한 부분 확인 하였습니다.
+
+![스트레스테스트](screenshots/livenessProbe3.png "livenessProbe")
+
