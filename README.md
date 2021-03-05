@@ -687,7 +687,6 @@ root@siege-5459b87f86-q62hb:/# siege -c100 -t120S -r10 -v --content-type "applic
 ![19 무정지 재배포 2 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110046173-e3773300-7d8e-11eb-8aab-94ea7ded6a5b.jpg)
 
 
-
 ## Self-healing (Liveness Probe)
 
 - drivercall 서비스 정상 확인
