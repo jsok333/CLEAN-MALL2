@@ -271,7 +271,7 @@ Date: Thu, 04 Mar 2021 16:07:12 GMT
 
 ```
 http localhost:8081/cleancalls
-http 20.194.36.201:8080/taxicalls
+http 52.231.8.44:8080/cleancalls
 ```
 
 ![4  삭제 화면 캡처 2021-03-05 002356](https://user-images.githubusercontent.com/61448505/109986485-231b2c00-7d49-11eb-9dbe-e07c96197e07.jpg)
