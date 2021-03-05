@@ -4,7 +4,7 @@
 # 서비스 시나리오
 
 ## 기능적 요구사항
-1. 고객이 청소장소와 가격을 선택하여 청소서비스 신청을 요청한다.
+1. 고객은 본인 연락처와 청소장소와 가격을 입력하고 청소서비스 신청을 요청한다.
 3. 가용한 청소담당자를 확인하여 배정을 요청한다
 4. 대상자 중에서 배정한다.
 5. 배정되면 고객에게 신청완료 정보를 전달한다.
@@ -17,7 +17,7 @@
 1. 트랜잭션
     1. 담당자배정 요청이 되지 않으면 신청을 할 수 없다. → Sync 호출
 1. 장애격리
-    1. 신청은 담당자 배정 기능이 동작하지 않더라고 호출이 가능해야 한다 → Async (event-driven), Eventual Consistency
+    1. 신청은 담당자 배정 기능이 동작하지 않아도 호출이 가능해야 한다 → Async (event-driven), Eventual Consistency
     1. 배정요청이 과중되면 신청요청을 잠시동안 받지 않고 결제를 잠시후에 하도록 유도한다 → Circuit breaker, fallback
 1. 성능
     1. 고객은  청소서비스 신청상태를 확인할 수 있어야 한다 → CQRS, Event driven 
@@ -229,7 +229,7 @@ http localhost:8081/cleancalls tel="0102545145" location="seoul" cost=400000
 ![3  청소요청1 화면 캡처 2021-03-05 001251](https://user-images.githubusercontent.com/61448505/109985170-cff4a980-7d47-11eb-8b81-6d3cfed26a5a.jpg)
 
 
-우선, 클라우드 상에서 호출은 다음과 같이 합니다. External-IP는 52.231.8.44 입니다.
+그리고 클라우드 상에서 호출은 다음과 같이 합니다. External-IP는 52.231.8.44 입니다.
 ```
 http 52.231.8.44:8080/cleancalls tel="0102545145" location="seoul" cost=600000
 http 52.231.8.44:8080/cleancalls tel="0102545145" location="seoul" cost=900000000
@@ -261,9 +261,9 @@ Date: Thu, 04 Mar 2021 15:21:28 GMT
 
 클라우드 상에서 호출 취소는 다음과 같습니다.
 ```
-http delete http://20.194.36.201:8080/cleancalls/4
-HTTP/1.1 204
-Date: Thu, 04 Mar 2021 16:07:12 GMT
+http DELETE 52.231.8.44:8080/cleancalls/4
+HTTP/1.1 204 No Content
+Date: Fri, 05 Mar 2021 03:37:43 GMT
 ```
 
 
@@ -376,9 +376,6 @@ public class CleanmanageServiceFallback implements CleanmanageService {
 }
 
 ```
-
-![7 동기처리 오류 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110006288-cd507f00-7d5c-11eb-8ba6-16b532e159b9.jpg)
-
 - 로컬 청소서비스 신청 
 
 청소서비스 신청을 하면 청소서비스 관리에 해당 요청에 대해 다음과 같이 동기적으로 진행 합니다.
@@ -416,16 +413,22 @@ public class CleanmanageServiceFallback implements CleanmanageService {
 		}
 		
 ```
-![7 동기처리 오류 2 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009515-7482e580-7d60-11eb-989f-c4d695bd7e9b.jpg)
 
-```
-
-```
 - 동기식 호출 적용으로 청소서비스 관리시스템이 정상적이지 않으면 , 청소서비스 신청도 접수될 수 없음을 다음과 같이 확인 할 수 있습니다.
 
 ```
-- 청소서비스 관리시스템 down 후 Cleancall 신청 
-#Cleancall
+- 하기와 같이 Cleancall 수정
+//@FeignClient(name="cleanmanage", url="http://localhost:8082",
+//        fallback = CleanmanageServiceFallback.class)
+@FeignClient(name="cleanmanage", url="http://localhost:8082")
+public interface CleanmanageService {
+
+    @RequestMapping(method= RequestMethod.POST, path="/cleanmanages")
+    public void cleanManageCall(@RequestBody Cleanmanage cleanmanage);
+
+}
+
+청소서비스 관리시스템 down 후 청소서비스 관리기능을 호출하면, 청소서비스 신청 시스템에서 500 오류가 발생 합니다.
 
 ```
 ![7 동기처리 오류 3 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009227-135b1200-7d60-11eb-97da-0df04aacc905.jpg)
@@ -442,11 +445,25 @@ public class CleanmanageServiceFallback implements CleanmanageService {
 - 서킷브레이크와 fallback 적용 시 확인내용 입니다.
   다시 소스를 아래와 같이 바꾸고 적용 시 서비스는 영향이 없으며, 다음과 같이 fallback 됩니다.
 
-![25 fallback 소스 화면 캡처 2021-03-05 101038](https://user-images.githubusercontent.com/61448505/110052586-26d79e80-7d9b-11eb-8ad8-8fc7731152c8.jpg)
+@FeignClient(name="cleanmanage", url="http://localhost:8082",
+fallback = CleanmanageServiceFallback.class)
+//@FeignClient(name="cleanmanage", url="http://localhost:8082")
+public interface CleanmanageService {
+
+    @RequestMapping(method= RequestMethod.POST, path="/cleanmanages")
+    public void cleanManageCall(@RequestBody Cleanmanage cleanmanage);
+
+}  
+
+서비스에서는 영향이 없으며, 다음과 같이 fallback 됩니다.
+
+(상태 호출확정 되지 않음)
 
 ![25 fallback 소스 2 화면 캡처 2021-03-05 101038](https://user-images.githubusercontent.com/61448505/110053183-3f948400-7d9c-11eb-9ecd-cfe48a66e90d.jpg)
 
 ![7 동기처리 오류 6 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110011203-836a9780-7d62-11eb-8f93-c8804ecb9f7f.jpg)
+
+
 
 ## 비동기식 호출 / 장애격리  / 성능
 
@@ -662,32 +679,6 @@ root@siege-5459b87f86-q62hb:/# siege -c200 -t120S -r10 -v --content-type "applic
 kubectl get deploy taxicall -w -n team03
 ```
 ![16 hpa 2 화면 캡처 2021-03-05 080745](https://user-images.githubusercontent.com/30484527/110043222-6053de00-7d8a-11eb-93d9-bfc89e6e49a9.jpg)
-
-
-
-## 무정지 재배포
-
-- deployment.yml에 readiness 옵션을 추가
-
-
-![무정지 배포1](https://user-images.githubusercontent.com/78134019/109809110-45d71300-7c6b-11eb-955c-9b8a3b3db698.png)
-
-
-- siege 실행
-```
-root@siege-5459b87f86-q62hb:/# siege -c100 -t120S -r10 -v --content-type "application/json" 'http://cleancall:8080/cleancalls POST {"tel": "0101231234"}'
-
-```
-
-
-- Availability: 100.00 % 확인
-
-![19 무정지 재배포1 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110045932-ce9a9f80-7d8e-11eb-90ae-7b237b84238d.jpg)
-
-![19 무정지 재배포 2 화면 캡처 2021-03-05 083850](https://user-images.githubusercontent.com/30484527/110046173-e3773300-7d8e-11eb-8aab-94ea7ded6a5b.jpg)
-
-
-
 
 
 ## Self-healing (Liveness Probe)
