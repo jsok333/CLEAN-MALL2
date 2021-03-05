@@ -346,7 +346,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-//@FeignClient(name="taximanage", url="http://localhost:8082")
+//@FeignClient(name="cleanmanage", url="http://localhost:8082")
 @FeignClient(name="cleanmanage", url="http://localhost:8082", fallback = CleanmanageServiceFallback.class)
 public interface CleanmanageService {
 
@@ -428,7 +428,7 @@ public interface CleanmanageService {
 
 }
 
-청소서비스 관리시스템 down 후 청소서비스 관리기능을 호출하면, 청소서비스 신청 시스템에서 500 오류가 발생 합니다.
+청소서비스 관리시스템 down 후 청소서비스 관리기능을 호출하면, 서비스 신청 시스템에서 500 오류가 발생 합니다.
 
 ```
 ![7 동기처리 오류 3 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110009227-135b1200-7d60-11eb-97da-0df04aacc905.jpg)
@@ -446,7 +446,7 @@ public interface CleanmanageService {
   다시 소스를 아래와 같이 바꾸고 적용 시 서비스는 영향이 없으며, 다음과 같이 fallback 됩니다.
 
 @FeignClient(name="cleanmanage", url="http://localhost:8082",
-fallback = CleanmanageServiceFallback.class)
+  fallback = CleanmanageServiceFallback.class)
 //@FeignClient(name="cleanmanage", url="http://localhost:8082")
 public interface CleanmanageService {
 
@@ -550,8 +550,8 @@ kubectl get ns
 * 도커 이미지 만들고 레지스트리에 등록하기
 ```
 cd cleancall
-az acr build --registry skuser13 --image skuser13 .azurecr.io/taxicalleng:v1 .
-az acr build --registry skuser13 --image skuser13.azurecr.io/taxicalleng:v2 .
+az acr build --registry skuser13 --image skuser13.azurecr.io/cleancall:v1 .
+az acr build --registry skuser13 --image skuser13.azurecr.io/cleancall:v2 .
 cd ..
 cd cleanmanage
 az acr build --registry skuser13 --image skuser13.azurecr.io/cleanmanage:v1 .
@@ -658,7 +658,7 @@ siege -c190 -t60S -r10 -v --content-type "application/json" 'http://cleancall:80
 
 ```
 # autocale out 설정
- deployment.yml 설정
+  cleanmanage service deployment.yml 설정
 ```
 
 ![auto1](https://user-images.githubusercontent.com/78134019/109794479-3ea70980-7c59-11eb-8d32-fbc039106c8c.jpg)
@@ -675,9 +675,7 @@ root@siege-5459b87f86-q62hb:/# siege -c200 -t120S -r10 -v --content-type "applic
 ![16 hpa 1 화면 캡처 2021-03-05 080745](https://user-images.githubusercontent.com/30484527/110043056-123eda80-7d8a-11eb-9116-b7efe4d54668.jpg)
 
 - 오토스케일링에 대한 모니터링:
-```
-kubectl get deploy taxicall -w -n team03
-```
+
 ![16 hpa 2 화면 캡처 2021-03-05 080745](https://user-images.githubusercontent.com/30484527/110043222-6053de00-7d8a-11eb-93d9-bfc89e6e49a9.jpg)
 
 
