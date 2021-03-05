@@ -438,8 +438,13 @@ public class CleanmanageServiceFallback implements CleanmanageService {
 
 ![7 동기처리 오류 5 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110010544-c1b38700-7d61-11eb-8afb-043cbc4bd9d4.jpg)
 
--fallback
+
+-fallback 적용 시 확인내용 입니다.
+ 서킷브레이크와 fallback 다시 소스를 아래와 같이 바꾸고 서비스에서는 영향이 없으며, 다음과 같이 fallback 됩니다.
+
 ![25 fallback 소스 화면 캡처 2021-03-05 101038](https://user-images.githubusercontent.com/61448505/110052586-26d79e80-7d9b-11eb-8ad8-8fc7731152c8.jpg)
+
+![25 fallback 소스 2 화면 캡처 2021-03-05 101038](https://user-images.githubusercontent.com/61448505/110053183-3f948400-7d9c-11eb-9ecd-cfe48a66e90d.jpg)
 
 ![7 동기처리 오류 6 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110011203-836a9780-7d62-11eb-8f93-c8804ecb9f7f.jpg)
 
