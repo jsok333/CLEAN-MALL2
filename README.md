@@ -439,6 +439,7 @@ public class CleanmanageServiceFallback implements CleanmanageService {
 ![7 동기처리 오류 5 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110010544-c1b38700-7d61-11eb-8afb-043cbc4bd9d4.jpg)
 
 -fallback
+![25 fallback 소스 화면 캡처 2021-03-05 101038](https://user-images.githubusercontent.com/61448505/110052586-26d79e80-7d9b-11eb-8ad8-8fc7731152c8.jpg)
 
 ![7 동기처리 오류 6 화면 캡처 2021-03-05 024343](https://user-images.githubusercontent.com/30484527/110011203-836a9780-7d62-11eb-8f93-c8804ecb9f7f.jpg)
 
